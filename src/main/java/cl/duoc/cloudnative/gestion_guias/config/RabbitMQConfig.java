@@ -4,17 +4,26 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
 
+    public static final String COLA_ENVIO = "cola.guias.envio";
     public static final String COLA_PROCESAMIENTO = "cola.guias.procesamiento";
     public static final String COLA_ERRORES = "cola.guias.errores";
     public static final String EXCHANGE_GUIAS = "exchange.guias";
     public static final String ROUTING_KEY_OK = "routing.guia.ok";
     public static final String ROUTING_KEY_FAIL = "routing.guia.fail";
+
+    @Bean
+    public Queue colaEnvio() {
+        return new Queue(COLA_ENVIO, true);
+    }
 
     @Bean
     public Queue colaProcesamiento() {
@@ -39,5 +48,10 @@ public class RabbitMQConfig {
     @Bean
     public Binding bindingErrores(Queue colaErrores, DirectExchange exchangeGuias) {
         return BindingBuilder.bind(colaErrores).to(exchangeGuias).with(ROUTING_KEY_FAIL);
+    }
+
+    @Bean
+    public MessageConverter jsonMessageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }
