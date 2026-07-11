@@ -34,7 +34,7 @@ public class GuiaController {
 
     @PostMapping("/consumir")
     public ResponseEntity<String> consumirGuia() {
-        Object mensaje = rabbitTemplate.receiveAndConvert("cola.guias.envio");
+        Object mensaje = rabbitTemplate.receiveAndConvert("cola.definitiva.envio");
         if (mensaje != null) {
             System.out.println(mensaje);
             return ResponseEntity.ok("Mensaje consumido desde la cola y procesado con éxito.");

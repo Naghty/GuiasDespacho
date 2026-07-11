@@ -14,17 +14,17 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue queue() {
-        return new Queue("cola.guias.envio", true);
+        return new Queue("cola.definitiva.envio", true);
     }
 
     @Bean
     public TopicExchange exchange() {
-        return new TopicExchange("exchange.guias");
+        return new TopicExchange("exchange.definitivo");
     }
 
     @Bean
     public Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("routing.guias");
+        return BindingBuilder.bind(queue).to(exchange).with("routing.definitivo");
     }
 
     @Bean

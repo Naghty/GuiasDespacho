@@ -13,7 +13,7 @@ public class GuiaProducerService {
 
     public void enviarGuia(GuiaDespacho guia) {
         System.out.println("Procesando guia ID: " + guia.getId());
-        rabbitTemplate.convertAndSend("exchange.guias", "routing.guias", guia);
-        System.out.println("Mensaje enviado a cola 1");
+        rabbitTemplate.convertAndSend("exchange.definitivo", "routing.definitivo", guia);
+        System.out.println("Mensaje enviado a cola definitiva");
     }
 }
