@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @RestController
 @RequestMapping("/api/guias")
@@ -16,6 +17,9 @@ public class GuiaController {
 
     @Autowired
     private GuiaProducerService guiaProducerService;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
 
     @PostMapping("/crear")
     public ResponseEntity<String> crearGuia(@RequestBody GuiaDespacho guia) {
@@ -26,5 +30,16 @@ public class GuiaController {
     @GetMapping("/status")
     public ResponseEntity<String> checkStatus() {
         return ResponseEntity.ok("Servicio de Gestión de Guías Operativo");
+    }
+
+    @PostMapping("/consumir")
+    public ResponseEntity<String> consumirGuia() {
+        Object mensaje = rabbitTemplate.receiveAndConvert("cola.guias.envio");
+        if (mensaje != null) {
+            System.out.println(mensaje);
+            return ResponseEntity.ok("Mensaje consumido desde la cola y procesado con éxito.");
+        } else {
+            return ResponseEntity.ok("No hay mensajes pendientes en la cola.");
+        }
     }
 }
