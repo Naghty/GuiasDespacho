@@ -22,8 +22,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.GET, "/api/guias/*/descargar").hasAnyAuthority("ROLE_READER", "ROLE_ADMIN")
                 .requestMatchers(HttpMethod.POST, "/api/guias").hasAuthority("ROLE_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/guias/crear").hasAuthority("ROLE_ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/guias/consumir").hasAuthority("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/guias/crear").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/guias/consumir").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/guias/*/subir-s3").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/guias/*").hasAuthority("ROLE_ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/guias/*").hasAuthority("ROLE_ADMIN")
