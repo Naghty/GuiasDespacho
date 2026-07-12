@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.core.Message;
+import java.nio.charset.StandardCharsets;
 
 @RestController
 @RequestMapping("/api/guias")
@@ -34,12 +36,19 @@ public class GuiaController {
 
     @PostMapping("/consumir")
     public ResponseEntity<String> consumirGuia() {
-        Object mensaje = rabbitTemplate.receiveAndConvert("cola.definitiva.envio");
-        if (mensaje != null) {
-            System.out.println(mensaje);
-            return ResponseEntity.ok("Mensaje consumido desde la cola y procesado con éxito.");
-        } else {
-            return ResponseEntity.ok("No hay mensajes pendientes en la cola.");
+        try {
+            Message mensajeRaw = rabbitTemplate.receive("cola.definitiva.envio");
+            
+            if (mensajeRaw != null) {
+                String jsonStr = new String(mensajeRaw.getBody(), StandardCharsets.UTF_8);
+                System.out.println("Mensaje recuperado de la cola: " + jsonStr);
+                return ResponseEntity.ok("Mensaje consumido con éxito: " + jsonStr);
+            } else {
+                return ResponseEntity.ok("No hay mensajes pendientes en la cola (la cola está vacía).");
+            }
+        } catch (Exception e) {
+            System.err.println("Error controlado al consumir: " + e.getMessage());
+            return ResponseEntity.status(500).body("Error interno en el broker: " + e.getMessage());
         }
     }
 }
